@@ -130,7 +130,7 @@ export default {
     .remove-item {
       float: right;
       font-weight: bold;
-      font-size: 28px;
+      font-size: $primary-font-size + 7;
       cursor: pointer;
       display: none;
     }

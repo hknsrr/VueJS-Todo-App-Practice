@@ -2,7 +2,7 @@
   <div class="todo-app">
     <h2>{{ msg }} <span v-if="remainingTodos > 0">Yapılacak {{remainingTodos}} iş kaldı.</span></h2>
     <input type="text" class="todo-input" placeholder="Yapılacak bir şeyler yaz..." v-model="newTodo" @keyup.enter="addTodo" ref="newTodoRef" v-focus>
-    <div v-for="(todo, index) in todos" :key="index" class="todo-item">
+    <div v-for="(todo, index) in filteredTodos" :key="index" class="todo-item">
       <input type="checkbox" class="todo-checkbox" v-model="todo.completed" v-on:change="checkTodo">
       <span v-bind:class="{ completed: todo.completed }">{{ todo.title }}</span>
       <span class="remove-item" v-on:click="removeTodo(index)">&times;</span>
@@ -10,7 +10,12 @@
     <div v-if="todos.length > 0" class="todo-footer">
       <input type="checkbox" id="todo-checkbox-all" v-model="checkedAll" class="todo-checkbox" v-on:change="checkAllTodos">
       <label for="todo-checkbox-all">Hepsini Seç</label>
-      <input type="button" v-if="selectedTodos > 0" class="clear-completed" value="Temizle" v-on:click="clearCompleted">
+      <ul>
+        <li><a href="#/all" v-bind:class="{active : listfilter == 'allList'}" v-on:click="listfilter='allList'">Tümü</a></li>
+        <li><a href="#/completed" v-bind:class="{active : listfilter == 'completedlist'}" v-on:click="listfilter='completedlist'">Tamamlanan</a></li>
+        <li><a href="#/remaining" v-bind:class="{active : listfilter == 'remaininglist'}" v-on:click="listfilter='remaininglist'">Kalan</a></li>
+      </ul>
+      <input type="button" v-if="completedTodos > 0 && listfilter!='remaininglist'" class="clear-completed" value="Temizle" v-on:click="clearCompleted">
     </div>
   </div>
 </template>
@@ -22,6 +27,7 @@ export default {
     return {
       msg: "Merhaba!",
       newTodo: "",
+      listfilter: "allList",
       todos: [
         {
           id: 1,
@@ -54,8 +60,15 @@ export default {
     remainingTodos() {
       return this.todos.filter(todo => !todo.completed).length;
     },
-    selectedTodos() {
+    completedTodos() {
       return this.todos.filter(todo => todo.completed).length;
+    },
+    filteredTodos() {
+      if (this.listfilter == "completedlist")
+        return this.todos.filter(todo => todo.completed);
+      else if (this.listfilter == "remaininglist")
+        return this.todos.filter(todo => !todo.completed);
+      else return this.todos;
     }
   },
   methods: {
@@ -141,6 +154,7 @@ export default {
     background: none;
     color: $secondary-color;
     padding: 10px 15px;
+    margin: 13px 0;
     text-align: center;
     text-decoration: none;
     font-size: $secondary-font-size;
@@ -152,6 +166,27 @@ export default {
   label[for="todo-checkbox-all"] {
     position: relative;
     bottom: 3px;
+  }
+  ul {
+    list-style-type: none;
+    display: inline-block;
+    font-size: $secondary-font-size;
+    li {
+      display: inherit;
+      margin: 5px;
+      a {
+        text-decoration: none;
+        color: $primary-color;
+        padding: 5px;
+        border: 1px solid transparent;
+        &:hover {
+          border: 1px solid gray;
+        }
+      }
+    }
+  }
+  .active {
+    border: 1px solid gray;
   }
 }
 </style>

@@ -10,12 +10,16 @@
     <div v-if="todos.length > 0" class="todo-footer">
       <input type="checkbox" id="todo-checkbox-all" v-model="checkedAll" class="todo-checkbox" v-on:change="checkAllTodos">
       <label for="todo-checkbox-all">Hepsini Seç</label>
+      <span v-if="completedTodos > 0" class="completedInfo">{{completedTodos}} iş tamamlandı.</span>
+      <hr>
       <ul>
         <li><a href="#/all" v-bind:class="{active : listfilter == 'allList'}" v-on:click="listfilter='allList'">Tümü</a></li>
         <li><a href="#/completed" v-bind:class="{active : listfilter == 'completedlist'}" v-on:click="listfilter='completedlist'">Tamamlanan</a></li>
         <li><a href="#/remaining" v-bind:class="{active : listfilter == 'remaininglist'}" v-on:click="listfilter='remaininglist'">Kalan</a></li>
       </ul>
-      <input type="button" v-if="completedTodos > 0 && listfilter!='remaininglist'" class="clear-completed" value="Temizle" v-on:click="clearCompleted">
+      <transition name="fade">
+        <input type="button" v-if="completedTodos > 0 && listfilter!='remaininglist'" class="clear-completed" value="Temizle" v-on:click="clearCompleted">
+      </transition>
     </div>
   </div>
 </template>
@@ -167,13 +171,18 @@ export default {
     position: relative;
     bottom: 3px;
   }
+  .completedInfo{
+    float: right;
+    font-size: $secondary-font-size;
+  }
   ul {
     list-style-type: none;
     display: inline-block;
     font-size: $secondary-font-size;
+    padding: 0;
     li {
       display: inherit;
-      margin: 5px;
+      margin: 5px 1px;
       a {
         text-decoration: none;
         color: $primary-color;
@@ -188,5 +197,11 @@ export default {
   .active {
     border: 1px solid gray;
   }
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>
